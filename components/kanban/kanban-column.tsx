@@ -1,3 +1,5 @@
+// This file will be split into two: kanban-column.server.tsx (server) and kanban-column.client.tsx (client). Any pure logic will be moved to lib/kanban-column-utils.ts. The current file will be deleted after the split.
+
 "use client"
 
 import type React from "react"
@@ -7,7 +9,7 @@ import { Archive } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { SortableKanbanTask } from "@/components/kanban/sortable-kanban-task"
 import { ColumnFilter, type ColumnFilterOptions } from "@/components/kanban/column-filter"
-import { ColumnStatistics } from "@/components/kanban/column-statistics"
+import ColumnStatistics from "@/components/kanban/column-statistics.server"
 import { ColumnSorter } from "@/components/kanban/column-sorter"
 import { BulkTaskMover } from "@/components/kanban/bulk-task-mover"
 import type { Task, WorkflowStatus, ColumnSortOptions } from "@/lib/types"
@@ -296,7 +298,6 @@ export function KanbanColumn({
             {sortedTasks.map((task) => (
               <SortableKanbanTask
                 key={task.id}
-                id={task.id}
                 task={task}
                 isSelected={task.id === selectedTaskId}
                 selectedRef={task.id === selectedTaskId ? selectedTaskRef : undefined}

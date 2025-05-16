@@ -77,3 +77,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create task" }, { status: 500 })
   }
 }
+
+export async function GET(request: Request) {
+  try {
+    const tasks = await prisma.task.findMany({
+      include: {
+        assignee: {
+          select: { id: true, name: true, email: true, image: true },
+        },
+        creator: {
+          select: { id: true, name: true, email: true, image: true },
+        },
+      },
+    });
+    return NextResponse.json(tasks);
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    return NextResponse.json({ error: "Failed to fetch tasks" }, { status: 500 });
+  }
+}

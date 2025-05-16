@@ -24,7 +24,14 @@ export default async function EditTaskPage({
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Edit Task</h1>
-      <TaskForm task={task} />
+      <TaskForm task={{
+        ...task,
+        status: task.status as import('@/lib/types').TaskStatus,
+        priority: task.priority as import('@/lib/types').TaskPriority,
+        dueDate: task.dueDate instanceof Date ? task.dueDate.toISOString() : task.dueDate,
+        createdAt: task.createdAt instanceof Date ? task.createdAt.toISOString() : task.createdAt,
+        updatedAt: task.updatedAt instanceof Date ? task.updatedAt.toISOString() : task.updatedAt,
+      }} />
     </div>
   )
 }

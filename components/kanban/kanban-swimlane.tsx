@@ -1,3 +1,5 @@
+// This file will be split into two: kanban-swimlane.server.tsx (server) and kanban-swimlane.client.tsx (client). Any pure logic will be moved to lib/kanban-swimlane-utils.ts. The current file will be deleted after the split.
+
 "use client"
 
 import type React from "react"
@@ -6,7 +8,7 @@ import { useRef } from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { KanbanColumn } from "@/components/kanban/kanban-column"
-import { SwimlaneStatistics } from "@/components/kanban/swimlane-statistics"
+import { SwimlaneStatistics } from "@/components/kanban/swimlane-statistics.server"
 import type { ColumnFilterOptions } from "@/components/kanban/column-filter"
 import type { Swimlane, WorkflowStatus, Task } from "@/lib/types"
 

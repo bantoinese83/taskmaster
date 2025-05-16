@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma"
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions)
 
-  if (!session) {
+  if (!session || !session.user || !('id' in session.user) || !session.user.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
 
     // Build query
     const where = {
-      userId: session.user.id,
+      userId: session.user.id as string,
       ...(unreadOnly ? { isRead: false } : {}),
     }
 

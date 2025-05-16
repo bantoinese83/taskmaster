@@ -13,10 +13,12 @@ import { ColumnDistributionChart } from "@/components/analytics/column-distribut
 export function ColumnAnalytics() {
   const { statuses } = useWorkflow()
   const { tasks } = useTasks()
-  const [selectedColumn, setSelectedColumn] = useState<string>(statuses[0]?.id || "")
+  const [selectedColumn, setSelectedColumn] = useState<string>(
+    Array.isArray(statuses) && statuses.length > 0 ? statuses[0].id : ""
+  )
 
   // Get the selected column
-  const selectedStatus = statuses.find((status) => status.id === selectedColumn)
+  const selectedStatus = Array.isArray(statuses) ? statuses.find((status) => status.id === selectedColumn) : undefined
 
   // Get tasks for the selected column
   const columnTasks = tasks.filter((task) => task.statusId === selectedColumn)
@@ -35,7 +37,7 @@ export function ColumnAnalytics() {
               <SelectValue placeholder="Select column" />
             </SelectTrigger>
             <SelectContent>
-              {statuses.map((status) => (
+              {(Array.isArray(statuses) ? statuses : []).map((status) => (
                 <SelectItem key={status.id} value={status.id}>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: status.color }} />
@@ -71,14 +73,12 @@ export function ColumnAnalytics() {
                 columnName={selectedStatus.name}
                 columnColor={selectedStatus.color}
                 tasks={columnTasks}
-                statuses={statuses}
+                statuses={Array.isArray(statuses) ? statuses : []}
               />
             </TabsContent>
 
             <TabsContent value="distribution">
               <ColumnDistributionChart
-                columnId={selectedColumn}
-                columnName={selectedStatus.name}
                 columnColor={selectedStatus.color}
                 tasks={columnTasks}
               />
@@ -93,3 +93,6 @@ export function ColumnAnalytics() {
     </Card>
   )
 }
+
+
+

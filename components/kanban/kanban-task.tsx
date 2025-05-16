@@ -1,3 +1,5 @@
+// This file will be split into two: kanban-task.server.tsx (server) and kanban-task.client.tsx (client). Any pure logic will be moved to lib/kanban-task-utils.ts. The current file will be deleted after the split.
+
 "use client"
 
 import type React from "react"

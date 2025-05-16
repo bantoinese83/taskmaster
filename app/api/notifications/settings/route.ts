@@ -16,21 +16,21 @@ const settingsSchema = z.object({
 export async function GET() {
   const session = await getServerSession(authOptions)
 
-  if (!session) {
+  if (!session || !session.user || !('id' in session.user) || !session.user.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
   try {
     // Get user's notification settings
     let settings = await prisma.notificationSettings.findUnique({
-      where: { userId: session.user.id },
+      where: { userId: session.user.id as string },
     })
 
     // If settings don't exist, create default settings
     if (!settings) {
       settings = await prisma.notificationSettings.create({
         data: {
-          userId: session.user.id,
+          userId: session.user.id as string,
           taskAssigned: true,
           taskUpdated: true,
           taskCommented: true,
@@ -50,7 +50,7 @@ export async function GET() {
 export async function PUT(request: Request) {
   const session = await getServerSession(authOptions)
 
-  if (!session) {
+  if (!session || !session.user || !('id' in session.user) || !session.user.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
@@ -60,11 +60,11 @@ export async function PUT(request: Request) {
 
     // Update or create notification settings
     const settings = await prisma.notificationSettings.upsert({
-      where: { userId: session.user.id },
+      where: { userId: session.user.id as string },
       update: validatedData,
       create: {
         ...validatedData,
-        userId: session.user.id,
+        userId: session.user.id as string,
         // Set defaults for any missing fields
         taskAssigned: validatedData.taskAssigned ?? true,
         taskUpdated: validatedData.taskUpdated ?? true,

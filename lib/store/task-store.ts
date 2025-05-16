@@ -59,6 +59,16 @@ export const useTaskStore = create<TaskStore>()(
           sortDirection: "asc",
         },
 
+        // Add this at the top, after imports
+        defaultFilter: {
+          status: "ALL",
+          priority: "ALL",
+          assigneeId: "ALL",
+          searchQuery: "",
+          sortBy: "dueDate",
+          sortDirection: "asc",
+        },
+
         // Actions
         fetchTasks: async () => {
           set({ isLoading: true, error: null })
@@ -168,6 +178,7 @@ export const useTaskStore = create<TaskStore>()(
         setFilter: (filterUpdate) => {
           set((state) => ({
             filter: {
+              ...defaultFilter,
               ...state.filter,
               ...filterUpdate,
             },

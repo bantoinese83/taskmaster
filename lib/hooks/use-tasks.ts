@@ -96,5 +96,6 @@ export function useTasks() {
     getTasksByAssignee,
     getTasksDueSoon,
     getOverdueTasks,
+    setFilter,
   }
 }

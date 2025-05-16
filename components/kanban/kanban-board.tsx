@@ -1,3 +1,5 @@
+// This file will be split into two: kanban-board.server.tsx (server) and kanban-board.client.tsx (client). Any pure logic will be moved to lib/kanban-board-utils.ts. The current file will be deleted after the split.
+
 "use client"
 
 import { Button } from "@/components/ui/button"
