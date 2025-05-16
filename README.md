@@ -121,6 +121,31 @@ TaskMaster is a powerful, feature-rich task management system built with Next.js
 3. Preview the report to ensure it contains the desired information
 4. Download the PDF or schedule it for regular delivery
 
+### Using the withAuth HOC
+The `withAuth` higher-order component (HOC) is used to handle session validation and redirection in your application. It ensures that only authenticated users can access certain pages.
+
+#### How to Use withAuth
+1. Import the `withAuth` HOC in your page component:
+   ```javascript
+   import { withAuth } from "@/components/with-auth";
+   ```
+
+2. Wrap your page component with the `withAuth` HOC:
+   ```javascript
+   function MyPage() {
+     return (
+       <div>
+         <h1>My Protected Page</h1>
+         {/* Your page content */}
+       </div>
+     );
+   }
+
+   export default withAuth(MyPage);
+   ```
+
+3. The `withAuth` HOC will handle session validation and redirect unauthenticated users to the sign-in page.
+
 ## 🔧 Advanced Configuration
 
 ### Database Configuration

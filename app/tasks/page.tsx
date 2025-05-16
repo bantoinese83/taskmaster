@@ -1,22 +1,13 @@
 import { Suspense } from "react"
 import { TaskListSkeleton } from "@/components/tasks/task-list-skeleton"
 import TaskListContainer from "@/components/tasks/task-list-container"
-import { getServerSession } from "next-auth"
-import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/auth"
-import { ROUTES } from "@/lib/constants"
+import { withAuth } from "@/components/with-auth";
 
-export default async function TasksPage({
+function TasksPage({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    redirect(ROUTES.SIGN_IN)
-  }
-
   // Extract filter parameters from URL
   const status = searchParams.status as string | undefined
   const priority = searchParams.priority as string | undefined
@@ -45,3 +36,5 @@ export default async function TasksPage({
     </div>
   )
 }
+
+export default withAuth(TasksPage);
