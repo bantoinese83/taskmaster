@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { hash } from "bcrypt"
+import { hash } from "bcryptjs"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     })
 
     // Return user without password
-    const { password, ...userWithoutPassword } = user
+    const { password: _password, ...userWithoutPassword } = user
 
     return NextResponse.json({ user: userWithoutPassword, message: "User created successfully" }, { status: 201 })
   } catch (error) {

@@ -13,7 +13,7 @@ const settingsSchema = z.object({
   statusChanged: z.boolean().optional(),
 })
 
-export async function GET(request: Request) {
+export async function GET() {
   const session = await getServerSession(authOptions)
 
   if (!session) {

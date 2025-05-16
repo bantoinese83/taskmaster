@@ -7,13 +7,11 @@ import { TASK_PRIORITY } from "@/lib/constants"
 import type { Task } from "@/lib/types"
 
 interface ColumnDistributionChartProps {
-  columnId: string
-  columnName: string
   columnColor: string
   tasks: Task[]
 }
 
-export function ColumnDistributionChart({ columnId, columnName, columnColor, tasks }: ColumnDistributionChartProps) {
+export function ColumnDistributionChart({ columnColor, tasks }: ColumnDistributionChartProps) {
   // Generate priority distribution data
   const priorityData = useMemo(() => {
     const distribution: Record<string, number> = {}

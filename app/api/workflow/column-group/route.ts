@@ -15,7 +15,7 @@ const columnGroupSchema = z.object({
     .nullable(),
 })
 
-export async function GET(request: Request) {
+export async function GET() {
   const session = await getServerSession(authOptions)
 
   if (!session) {

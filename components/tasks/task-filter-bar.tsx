@@ -19,8 +19,7 @@ interface TaskFilterBarProps {
 export function TaskFilterBar({ onFilterChange, initialFilter }: TaskFilterBarProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { users, isLoading: isLoadingUsers } = useUsers()
-  const { toast } = useToast()
+  const { users } = useUsers()
 
   // Initialize filter state from URL or initial props
   const [filter, setFilter] = useState<TaskFilter>({

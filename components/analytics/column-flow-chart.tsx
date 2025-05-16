@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Sankey, type SankeyNode, type SankeyLink, ResponsiveContainer, Tooltip } from "recharts"
+import { Sankey, ResponsiveContainer, Tooltip } from "recharts"
 import type { Task, WorkflowStatus } from "@/lib/types"
 
 interface ColumnFlowChartProps {
@@ -19,30 +19,30 @@ export function ColumnFlowChart({ columnId, columnName, columnColor, tasks, stat
     // In a real implementation, this would use actual task history data
 
     // Create nodes for all statuses
-    const nodes: SankeyNode[] = statuses.map((status, index) => ({
+    const nodes = statuses.map((status, index) => ({
       name: status.name,
       color: status.color,
       value: 0,
     }))
 
-    // Add "External" node for tasks coming from outside the system
-    nodes.push({
-      name: "External",
-      color: "#94a3b8",
-      value: 0,
-    })
+    // recharts expects source/target as node indices, not names
+    // We'll build a name-to-index map for this mock
+    const nameToIndex = Object.fromEntries(nodes.map((n, i) => [n.name, i]))
 
-    // Add "Completed" node for tasks that exit the system
-    nodes.push({
-      name: "Completed",
-      color: "#22c55e",
-      value: 0,
-    })
+    // Add "External" and "Completed" nodes to the map
+    nameToIndex["External"] = nodes.length
+    nameToIndex["Completed"] = nodes.length + 1
 
-    // Create links between nodes
-    const links: SankeyLink[] = []
+    // Helper to convert name-based links to index-based
+    function toIndexLink(link: { source: string; target: string; value: number }) {
+      return {
+        source: nameToIndex[link.source],
+        target: nameToIndex[link.target],
+        value: link.value,
+      }
+    }
 
-    // Mock data for incoming links
+    // Create links between nodes (no explicit type needed)
     const incomingLinks = [
       { source: "External", target: columnName, value: Math.floor(tasks.length * 0.4) },
       ...statuses
@@ -69,8 +69,14 @@ export function ColumnFlowChart({ columnId, columnName, columnColor, tasks, stat
     ]
 
     return {
-      nodes,
-      links: [...incomingLinks, ...outgoingLinks].filter((link) => link.value > 0),
+      nodes: [
+        ...nodes,
+        { name: "External", color: "#94a3b8", value: 0 },
+        { name: "Completed", color: "#22c55e", value: 0 },
+      ],
+      links: [...incomingLinks, ...outgoingLinks]
+        .filter((link) => link.value > 0)
+        .map(toIndexLink),
     }
   }, [columnId, columnName, columnColor, tasks, statuses])
 
