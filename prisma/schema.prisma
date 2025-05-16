@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdTasks Task[] @relation("CreatedTasks")
+  assignedTasks Task[] @relation("AssignedTasks")
+  comments     Comment[]
+  notifications Notification[] @relation("UserNotifications")
+  notificationSettings NotificationSettings?
+  workflowSettings WorkflowSettings?
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  status      String    @default("TODO")
+  priority    String    @default("MEDIUM")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  creatorId   String
+  creator     User      @relation("CreatedTasks", fields: [creatorId], references: [id], onDelete: Cascade)
+  
+  assigneeId  String?
+  assignee    User?     @relation("AssignedTasks", fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  comments    Comment[]
+  notifications Notification[] @relation("TaskNotifications")
+  
+  // New field to reference a custom status
+  statusId    String?
+  status_rel  WorkflowStatus? @relation(fields: [statusId], references: [id])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  type        String   // TASK_ASSIGNED, TASK_UPDATED, TASK_COMMENT, DEADLINE_APPROACHING, etc.
+  title       String
+  message     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  userId      String
+  user        User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  
+  taskId      String?
+  task        Task?    @relation("TaskNotifications", fields: [taskId], references: [id], onDelete: Cascade)
+  
+  actionUrl   String?  // URL to navigate to when notification is clicked
+}
+
+model NotificationSettings {
+  id                      String   @id @default(cuid())
+  taskAssigned            Boolean  @default(true)
+  taskUpdated             Boolean  @default(true)
+  taskCommented           Boolean  @default(true)
+  deadlineApproaching     Boolean  @default(true)
+  statusChanged           Boolean  @default(true)
+  
+  userId                  String   @unique
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// New models for custom workflows
+model WorkflowSettings {
+  id                      String   @id @default(cuid())
+  name                    String   @default("My Workflow")
+  description             String?
+  isDefault               Boolean  @default(false)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  enforceWipLimits        Boolean  @default(false)  // Field to enforce WIP limits
+  swimlaneProperty        String?  // Field for swimlane configuration
+  showArchivedColumns     Boolean  @default(false)  // New field to toggle archived columns visibility
+  
+  userId                  String   @unique
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  statuses                WorkflowStatus[]
+  columnGroups            ColumnGroup[]    // Relation to column groups
+}
+
+model WorkflowStatus {
+  id                      String   @id @default(cuid())
+  name                    String
+  description             String?
+  color                   String
+  order                   Int
+  isDefault               Boolean  @default(false)
+  wipLimit                Int?     // Field for WIP limits
+  isArchived              Boolean  @default(false)  // New field for archiving
+  archivedAt              DateTime? // New field to track when the column was archived
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  
+  workflowSettingsId      String
+  workflowSettings        WorkflowSettings @relation(fields: [workflowSettingsId], references: [id], onDelete: Cascade)
+  
+  columnGroupId           String?         // Field to reference a column group
+  columnGroup             ColumnGroup?    @relation(fields: [columnGroupId], references: [id], onDelete: SetNull)
+  
+  tasks                   Task[]
+}
+
+// Model for column groups
+model ColumnGroup {
+  id                      String   @id @default(cuid())
+  name                    String
+  description             String?
+  color                   String?
+  order                   Int
+  isCollapsed             Boolean  @default(false)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  
+  workflowSettingsId      String
+  workflowSettings        WorkflowSettings @relation(fields: [workflowSettingsId], references: [id], onDelete: Cascade)
+  
+  statuses                WorkflowStatus[]
+}
