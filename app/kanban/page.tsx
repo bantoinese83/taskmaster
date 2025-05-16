@@ -1,17 +1,8 @@
-import { getServerSession } from "next-auth"
-import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/auth"
-import { ROUTES } from "@/lib/constants"
+import { withAuth } from "@/components/with-auth";
 import KanbanBoard from "@/components/kanban/kanban-board"
 import { KanbanToolbar } from "@/components/kanban/kanban-toolbar"
 
-export default async function KanbanPage() {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    redirect(ROUTES.SIGN_IN)
-  }
-
+function KanbanPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
@@ -25,3 +16,5 @@ export default async function KanbanPage() {
     </div>
   )
 }
+
+export default withAuth(KanbanPage);
