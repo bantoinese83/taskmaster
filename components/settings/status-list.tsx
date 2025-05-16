@@ -17,6 +17,8 @@ import { SortableStatusItem } from "@/components/settings/sortable-status-item"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import type { WorkflowStatus } from "@/lib/types"
+import { SharedLoading } from "@/components/ui/shared-loading"
+import { SharedError } from "@/components/ui/shared-error"
 
 export function StatusList() {
   const { statuses, isLoading, error, reorderStatuses } = useWorkflow()
@@ -64,22 +66,11 @@ export function StatusList() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-32">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
+  if (isLoading)
+    return <SharedLoading />
 
-  if (error) {
-    return (
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
-    )
-  }
+  if (error)
+    return <SharedError error={new Error(error)} />
 
   if (items.length === 0) {
     return (

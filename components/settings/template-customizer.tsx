@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator"
 import { ColorPalette } from "@/components/ui/color-palette"
 import { useToast } from "@/hooks/use-toast"
 import { AlertCircle, ArrowDown, ArrowUp, Check, ChevronLeft, Plus, Trash2, X } from "lucide-react"
+import { SharedLoading } from "@/components/ui/shared-loading"
 
 interface TemplateCustomizerProps {
   templateId: string
@@ -72,13 +73,8 @@ export function TemplateCustomizer({ templateId, onCancel, onApplied }: Template
     setExpandedStatusIndex(expandedStatusIndex === index ? null : index)
   }
 
-  if (!isCustomizing || !customizedTemplate) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
+  if (!isCustomizing || !customizedTemplate)
+    return <SharedLoading />
 
   return (
     <div className="space-y-6">

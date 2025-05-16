@@ -6,6 +6,7 @@ import { CommentForm } from "@/components/comments/comment-form"
 import { Skeleton } from "@/components/ui/skeleton"
 import { MessageSquare } from "lucide-react"
 import type { Comment } from "@/lib/types"
+import { SharedError } from "@/components/ui/shared-error"
 
 interface CommentListProps {
   taskId: string
@@ -19,13 +20,8 @@ export function CommentList({ taskId }: CommentListProps) {
     console.log("Comment added:", comment)
   }
 
-  if (error) {
-    return (
-      <div className="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 p-4 rounded-md">
-        Error loading comments: {error}
-      </div>
-    )
-  }
+  if (error)
+    return <SharedError error={new Error(error)} />
 
   return (
     <div className="space-y-6">
