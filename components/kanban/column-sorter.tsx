@@ -73,20 +73,9 @@ export function ColumnSorter({
     }
   }
 
-  // Get label for current sort
-  const getSortLabel = () => {
-    if (!activeSortOptions) return null
-
-    const criterion = sortCriteria.find((c) => c.value === activeSortOptions.criterion)
-    if (!criterion) return null
-
-    return (
-      <Badge variant="outline" className="ml-1 text-xs gap-1">
-        {criterion.label}
-        {activeSortOptions.direction === "asc" ? "↑" : "↓"}
-      </Badge>
-    )
-  }
+  const handleSortChange = (columnId: string, direction: 'asc' | 'desc' | null) => {
+    onSortChange(columnId, direction as unknown);
+  };
 
   return (
     <TooltipProvider>
@@ -157,7 +146,7 @@ export function ColumnSorter({
           <DropdownMenuItem
             className="text-muted-foreground"
             onClick={() => {
-              onSortChange(columnId, null as any)
+              onSortChange(columnId, null as unknown)
               setIsOpen(false)
             }}
             disabled={!activeSortOptions}

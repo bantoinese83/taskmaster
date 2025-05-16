@@ -133,8 +133,8 @@ export function ColumnGroupManager() {
     setShowColorPicker(false)
   }
 
-  const handleDragEnd = async (event: any) => {
-    const { active, over } = event
+  const handleDragEnd = async (event: unknown) => {
+    const { active, over } = event as any
 
     if (!over || active.id === over.id) return
 

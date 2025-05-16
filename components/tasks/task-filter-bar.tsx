@@ -7,9 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { X, SortAsc, SortDesc } from "lucide-react"
 import { useUsers } from "@/lib/hooks/use-users"
-import { useToast } from "@/hooks/use-toast"
 import { TASK_STATUS, TASK_STATUS_LABELS, TASK_PRIORITY, TASK_PRIORITY_LABELS, SORT_OPTIONS } from "@/lib/constants"
-import type { TaskFilter } from "@/lib/types"
+import type { TaskFilter, TaskStatus, TaskPriority } from "@/lib/types"
 
 interface TaskFilterBarProps {
   onFilterChange: (filter: TaskFilter) => void
@@ -23,12 +22,12 @@ export function TaskFilterBar({ onFilterChange, initialFilter }: TaskFilterBarPr
 
   // Initialize filter state from URL or initial props
   const [filter, setFilter] = useState<TaskFilter>({
-    status: (searchParams.get("status") as any) || initialFilter?.status || "ALL",
-    priority: (searchParams.get("priority") as any) || initialFilter?.priority || "ALL",
+    status: (searchParams.get("status") as TaskStatus | "ALL" | undefined) || initialFilter?.status || "ALL",
+    priority: (searchParams.get("priority") as TaskPriority | "ALL" | undefined) || initialFilter?.priority || "ALL",
     assigneeId: searchParams.get("assigneeId") || initialFilter?.assigneeId || "ALL",
     searchQuery: searchParams.get("search") || initialFilter?.searchQuery || "",
-    sortBy: (searchParams.get("sortBy") as any) || initialFilter?.sortBy || "dueDate",
-    sortDirection: (searchParams.get("sortDirection") as any) || initialFilter?.sortDirection || "asc",
+    sortBy: (searchParams.get("sortBy") as "priority" | "dueDate" | "title" | "createdAt" | undefined) || initialFilter?.sortBy || "dueDate",
+    sortDirection: (searchParams.get("sortDirection") as "asc" | "desc" | undefined) || initialFilter?.sortDirection || "asc",
   })
 
   // Update URL when filter changes
@@ -66,7 +65,7 @@ export function TaskFilterBar({ onFilterChange, initialFilter }: TaskFilterBarPr
     onFilterChange(filter)
   }, [filter, router, onFilterChange])
 
-  const handleFilterChange = (key: keyof TaskFilter, value: any) => {
+  const handleFilterChange = (key: keyof TaskFilter, value: unknown) => {
     setFilter((prev) => ({ ...prev, [key]: value }))
   }
 

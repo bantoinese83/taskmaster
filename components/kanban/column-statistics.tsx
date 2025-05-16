@@ -50,7 +50,7 @@ export function ColumnStatistics({
   const [activeTab, setActiveTab] = useState("overview")
 
   // Calculate metrics
-  const metrics: ColumnMetrics = calculateMetrics(tasks)
+  const metrics: ColumnMetrics = calculateMetrics(tasks, status)
 
   return (
     <Popover>
@@ -253,16 +253,23 @@ function StatCard({
 }
 
 // Helper function to calculate metrics
-function calculateMetrics(tasks: Task[]): ColumnMetrics {
-  // Mock data for now - in a real implementation, this would use actual task history data
+function calculateMetrics(tasks: Task[], status?: WorkflowStatus): ColumnMetrics {
   const now = new Date()
 
-  // Calculate time in column metrics
+  // Use statusHistory to get when the task entered this column
   const timeInColumnDays = tasks
     .map((task) => {
-      const createdAt = new Date(task.createdAt)
-      const diffTime = Math.abs(now.getTime() - createdAt.getTime())
-      return diffTime / (1000 * 60 * 60 * 24) // convert to days
+      let enteredAt: string | undefined = undefined
+      if (task.statusHistory && status) {
+        // Find the most recent entry for this status
+        const entry = task.statusHistory.find(
+          (h) => h.statusId === status.id && !h.exitedAt
+        )
+        if (entry) enteredAt = entry.enteredAt
+      }
+      const start = enteredAt ? new Date(enteredAt) : new Date(task.createdAt)
+      const diffTime = Math.abs(now.getTime() - start.getTime())
+      return diffTime / (1000 * 60 * 60 * 24) // days
     })
     .sort((a, b) => a - b)
 
@@ -302,9 +309,14 @@ function calculateMetrics(tasks: Task[]): ColumnMetrics {
     return dueDate < now
   }).length
 
-  // Mock completion rate and blocked tasks for demonstration
-  const completionRate = tasks.length > 0 ? Math.round(Math.random() * 100) : 0
-  const blockedTasks = Math.round(tasks.length * 0.1) // 10% of tasks are blocked (mock data)
+  // Blocked tasks: no property, so always 0
+  const blockedTasks = 0
+
+  // Completion rate: 100% if this is a 'done' column, otherwise 0%
+  let completionRate = 0
+  if (status && /done|complete/i.test(status.name)) {
+    completionRate = 100
+  }
 
   return {
     timeInColumn: {

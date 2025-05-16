@@ -12,13 +12,14 @@ import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useWorkflow } from "@/lib/hooks/use-workflow"
 import { useToast } from "@/hooks/use-toast"
-import { SwimlaneConfig } from "@/components/settings/swimlane-config"
-import { ArchivedColumnsManager } from "@/components/settings/archived-columns-manager"
+import { ArchivedColumnsManager } from "./archived-columns-manager"
+import { SwimlaneConfig } from "./swimlane-config"
+
 
 const formSchema = z.object({
   name: z.string().min(1, "Workflow name is required").max(100),
   description: z.string().optional(),
-  enforceWipLimits: z.boolean().default(false),
+  enforceWipLimits: z.boolean(),
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -34,7 +35,7 @@ export function WorkflowSettingsForm() {
     defaultValues: {
       name: settings?.name || "My Workflow",
       description: settings?.description || "",
-      enforceWipLimits: settings?.enforceWipLimits || false,
+      enforceWipLimits: settings?.enforceWipLimits ?? false,
     },
   })
 

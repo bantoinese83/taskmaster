@@ -26,12 +26,10 @@ import type { Task, TaskStatus, Swimlane, ColumnSortOptions } from "@/lib/types"
 
 interface KanbanBoardProps {
   tasks: Task[]
-  searchQuery?: string
   selectedTaskId?: string | null
-  onTaskSelect?: (taskId: string | null) => void
 }
 
-export default function KanbanBoard({ tasks, searchQuery, selectedTaskId, onTaskSelect }: KanbanBoardProps) {
+export default function KanbanBoard({ tasks, selectedTaskId }: KanbanBoardProps) {
   const { updateTask } = useTasks()
   const { statuses, settings, toggleArchivedColumnsVisibility } = useWorkflow()
   const { users } = useUsers()
@@ -392,14 +390,14 @@ export default function KanbanBoard({ tasks, searchQuery, selectedTaskId, onTask
   }, [activeId, localTasks])
 
   // Handle drag start
-  const handleDragStart = (event: any) => {
-    const { active } = event
-    setActiveId(active.id)
-  }
+  const handleDragStart = (event: unknown) => {
+    const { active } = event as { active: { id: string } };
+    setActiveId(active.id);
+  };
 
   // Handle drag end
-  const handleDragEnd = async (event: any) => {
-    const { active, over } = event
+  const handleDragEnd = async (event: unknown) => {
+    const { active, over } = event as { active: { id: string }, over: string | null };
 
     if (!over) {
       setActiveId(null)
@@ -407,7 +405,7 @@ export default function KanbanBoard({ tasks, searchQuery, selectedTaskId, onTask
     }
 
     // Extract status ID from the over ID (format: "cell-{swimlaneId}-{statusId}")
-    const [, , statusId] = over.id.split("-")
+    const [, , statusId] = over.split("-")
 
     // Check if task was dropped on a different column
     const activeTask = localTasks.find((task) => task.id === active.id)

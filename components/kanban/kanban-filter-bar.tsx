@@ -23,7 +23,7 @@ export interface KanbanFilters {
 }
 
 export function KanbanFilterBar({ onFilterChange, onTaskSelect, tasks }: KanbanFilterBarProps) {
-  const { users, isLoading: isLoadingUsers } = useUsers()
+  const { users } = useUsers()
   const [filters, setFilters] = useState<KanbanFilters>({
     searchQuery: "",
     priority: "ALL",
